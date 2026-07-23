@@ -119,6 +119,15 @@ app.delete('/api/posts/:id', (req, res) => {
   });
 });
 
+// Auto-ping (Keep-alive): Serverni uxlab qolishidan saqlab turish uchun har 12 daqiqada o'ziga so'rov yuboradi
+const TWELVE_MINUTES = 12 * 60 * 1000;
+setInterval(() => {
+  const url = process.env.RENDER_EXTERNAL_URL || 'https://uyishi.onrender.com';
+  fetch(`${url}/api/posts`)
+    .then(() => console.log(`[Auto-Ping] Server uyg'oq holatda saqlandi: ${new Date().toISOString()}`))
+    .catch((err) => console.error('[Auto-Ping Error]:', err.message));
+}, TWELVE_MINUTES);
+
 app.listen(PORT, () => {
   console.log(`Server muvaffaqiyatli ishga tushdi: http://localhost:${PORT}`);
 });
