@@ -49,12 +49,9 @@ app.get('/api/posts', (req, res) => {
   });
 });
 
-// POST /api/posts - Yangi post yaratish va Validatsiya (8-slayd talabi)
+// POST /api/posts - Yangi post yaratish
 app.post('/api/posts', async (req, res) => {
-  // Frontendlarga "Yuborilmoqda..." (7-slayd) holatini namoyish etish uchun 1 soniya sun'iy kutish qo'shamiz
-  await new Promise(resolve => setTimeout(resolve, 1000));
-
-  const { title, category, author, imageUrl, content } = req.body || {};
+  const { title, content } = req.body || {};
   const errors = {};
 
   // Validatsiya qoidalari
@@ -66,26 +63,10 @@ app.post('/api/posts', async (req, res) => {
     errors.title = "Sarlavha 100 ta belgidan oshmasligi kerak!";
   }
 
-  if (!category || typeof category !== 'string' || !category.trim()) {
-    errors.category = "Kategoriya tanlanishi yoki kiritilishi shart!";
-  }
-
-  if (!author || typeof author !== 'string' || !author.trim()) {
-    errors.author = "Muallif ismi kiritilishi shart!";
-  }
-
   if (!content || typeof content !== 'string' || !content.trim()) {
     errors.content = "Maqola matni kiritilishi shart!";
   } else if (content.trim().length < 15) {
     errors.content = "Maqola matni kamida 15 ta belgidan iborat bo'lishi kerak!";
-  }
-
-  if (imageUrl && imageUrl.trim()) {
-    const urlPattern = /^(https?:\/\/)?([\w.-]+)+[\w\-_~:/?#[\]@!$&'()*+,;=.]+\.(jpg|jpeg|png|webp|gif|svg)(\?.*)?$/i;
-    // Oddiyroq URL format tekshiruvi
-    if (!imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) {
-      errors.imageUrl = "Rasm havolasi 'http://' yoki 'https://' bilan boshlanishi kerak!";
-    }
   }
 
   // Agar validatsiya xatolari bo'lsa: 400 Bad Request
@@ -102,9 +83,6 @@ app.post('/api/posts', async (req, res) => {
   const newPost = {
     id: `post-${Date.now()}`,
     title: title.trim(),
-    category: category.trim(),
-    author: author.trim(),
-    imageUrl: imageUrl && imageUrl.trim() ? imageUrl.trim() : 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=800&q=80',
     content: content.trim(),
     createdAt: new Date().toISOString()
   };
